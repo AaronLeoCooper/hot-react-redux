@@ -1,4 +1,9 @@
-# React Redux Shell
+# Hot React Redux
+
+> **NOTE:** This is still a work in progress!
+
+Hot reload React, Redux & more...
+A (hopefully) solid starting point for most React Redux apps with a handful of useful dependencies included.
 
 ### Dependencies
 - **axios**: Data fetcher and sender API (GET, POST, etc..)
@@ -13,7 +18,7 @@
 - **react-helmet**: Easy control over page metadata from within React
 - **react-redux**: Bindings to bridge React & Redux
 - **react-router**: Easy SPA page routing for React
-- **react-router-redux**: Bindings for Redux and Router Router
+- **react-router-redux**: Bindings for Redux and React Router
 - **redux**: Redux library for pure functional single-source state
 - **webpack**: Module bundler for fast development & production-ready output
 - **webpack-strip**: Webpack plugin to remove unnecessary function calls
@@ -23,3 +28,8 @@
 - **jest**: Test suite for easy unit testing
 - **webpack-dev-middleware**: Serve webpack-processed files over local express server
 - **webpack-hot-middleware**: Hot-reloading to vastly speed up development
+
+Let me know if there's any errors or improvements you feel could be made.
+Feel free to submit pull requests if you think you can make useful contributions.
+
+*Thanks!*
