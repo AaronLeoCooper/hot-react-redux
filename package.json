@@ -22,13 +22,13 @@
       }
     },
     "build:dev": {
-      "command": "",
+      "command": "webpack --config webpack/config.build.dev.js",
       "env": {
         "NODE_ENV": "development"
       }
     },
     "build:prod": {
-      "command": "",
+      "command": "webpack --config webpack/config.build.prod.js",
       "env": {
         "NODE_ENV": "production"
       }
