@@ -1,8 +1,6 @@
 /**
  * HMR (Hot Module Replacement)
  *
- * ======== This config extends _base.config.js ========
- *
  * IMPORTANT: No files are outputted using HMR!!
  * This build is optimised to fully utilize Webpack's
  * HMR using webpack-dev-server. All file changes are
@@ -16,31 +14,23 @@ const root = path.join(__dirname, '../')
 const srcDir = 'src'
 const outputDir = 'dist/development/assets/scripts'
 
-const webpackEnv = new webpack.DefinePlugin({
-  'process.env': {
-    'NODE_ENV': JSON.stringify('development')
-  }
-})
-
 
 
 /**
  * Export hmr (npm start) config
- *
- * This config extends _base.config.js
  */
 
-const _baseConfig = require('./_base.config')
-
-module.exports = Object.assign({}, _baseConfig, {
-  debug: true,
+module.exports = {
+  // debug: true,
   devtool: 'eval',
+
+  context: root, // default: up 1 directory from this file's location
 
   entry: [
     'react-hot-loader/patch',
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',
-    `./${srcDir}/scripts/index.js`
+    `./${srcDir}/scripts/index.hmr.js`
   ],
 
   output: {
@@ -49,10 +39,49 @@ module.exports = Object.assign({}, _baseConfig, {
     publicPath: '/assets/scripts/'
   },
 
-  plugins: [
-    webpackEnv,
-    new webpack.HotModuleReplacementPlugin()
-  ],
+  resolve: {
+    alias: {
+      scripts: path.resolve(root, srcDir, 'scripts'),
+      styles: path.resolve(root, srcDir, 'styles'),
+      images: path.resolve(root, srcDir, 'images')
+    },
+    extensions: ['', '.js', '.jsx', '.css', '.scss', '.sass', '.jpg', '.png', '.gif']
+  },
+
+  module: {
+    loaders: [
+      {
+        test: /\.jsx?$/,
+        loaders: ['babel'],
+        exclude: /node_modules/,
+        include: [
+          path.join(root, srcDir, 'scripts'),
+          path.join(root, srcDir, 'styles'),
+          path.join(root, srcDir, 'images')
+        ]
+      },
+      {
+        test: /\.scss$/,
+        loaders: [ 'style-loader', 'css-loader?sourceMap', 'postcss-loader?sourceMap', 'sass-loader?sourceMap' ],
+        include: [
+          path.join(root, srcDir, 'styles'),
+          path.join(root, srcDir, 'images')
+        ]
+      },
+      {
+        test: /\.(jpg|png|gif)$/,
+        loader: 'url?limit=25000',
+        include: path.join(root, srcDir, 'images')
+      },
+      {
+        test: /\.(jpg|png|gif)$/,
+        loader: 'file?name=[path][name].[hash].[ext]',
+        include: path.join(root, srcDir, 'images')
+      }
+    ]
+  },
+
+  plugins: [ new webpack.HotModuleReplacementPlugin() ],
 
   devServer: {
     colors: true,
@@ -61,4 +90,4 @@ module.exports = Object.assign({}, _baseConfig, {
     port: 3000,
     hot: true
   }
-})
+}

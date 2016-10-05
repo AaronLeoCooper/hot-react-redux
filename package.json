@@ -16,19 +16,20 @@
   },
   "betterScripts": {
     "start": {
-      "command": "nodemon server.dev.js",
+      "command": "nodemon --exec 'gulp'",
       "env": {
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "HMR": "true"
       }
     },
     "build:dev": {
-      "command": "webpack --config webpack/config.build.dev.js",
+      "command": "gulp build:dev",
       "env": {
         "NODE_ENV": "development"
       }
     },
     "build:prod": {
-      "command": "webpack --config webpack/config.build.prod.js",
+      "command": "gulp build:prod",
       "env": {
         "NODE_ENV": "production"
       }
@@ -57,18 +58,18 @@
     "better-npm-run": "0.0.11",
     "css-loader": "^0.25.0",
     "del": "^2.2.2",
+    "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.1",
     "gulp-plumber": "^1.1.0",
-    "gulp-pug": "^3.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-size": "^2.1.0",
-    "gulp-stylus": "^2.5.0",
     "gulp-util": "^3.0.7",
     "gulp-watch": "^4.3.10",
     "immutable": "^3.8.1",
-    "pug": "^2.0.0-beta6",
+    "node-sass": "^3.10.1",
+    "postcss-loader": "^0.13.0",
     "react": "^15.3.2",
     "react-addons-shallow-compare": "^15.3.2",
     "react-dom": "^15.3.2",
@@ -78,9 +79,9 @@
     "react-router-redux": "^4.0.6",
     "redux": "^3.6.0",
     "run-sequence": "^1.2.2",
+    "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
-    "stylus": "^0.54.5",
-    "stylus-loader": "^2.3.1",
+    "url-loader": "^0.5.7",
     "webpack": "^1.13.2",
     "webpack-strip": "^0.1.0"
   },

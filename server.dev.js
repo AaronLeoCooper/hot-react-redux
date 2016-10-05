@@ -10,14 +10,16 @@ const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
 const config = require('./webpack/config.hmr')
 
-// {
-//   publicPath: config.output.publicPath
-// }
-
-new WebpackDevServer(webpack(config)).listen(3000, 'localhost', function (err, result) {
+new WebpackDevServer(webpack(config), {
+  colors: true,
+  historyApiFallback: true,
+  port: 3000,
+  hot: true,
+  publicPath: config.output.publicPath
+}).listen(3000, 'localhost', function (err, result) {
   if (err) {
     return console.error(err)
   }
 
-  console.log('Listening at localhost:3000, go to: http://localhost:3000/webpack-dev-server/src for HMR development')
+  console.log('Listening at localhost:3000, go to: http://localhost:3000/webpack-dev-server for HMR development')
 })

@@ -1,0 +1,10 @@
+@import '_reset';
+
+span {
+  color: red;
+  background: url('/images/200.jpg');
+  width: 400px;
+  height: 200px;
+  background-size: cover;
+  display: block;
+}

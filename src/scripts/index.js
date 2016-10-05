@@ -1,4 +1,8 @@
-// import { AppContainer } from 'react-hot-loader'
+/**
+ * Build entrypoint for app
+ * (HMR disabled)
+ */
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './components/App'
@@ -6,22 +10,3 @@ import App from './components/App'
 const rootElement = document.getElementById('app')
 
 ReactDOM.render(<App />, rootElement)
-
-// ReactDOM.render(
-//   <AppContainer>
-//     <App />
-//   </AppContainer>,
-//   rootElement
-// )
-
-// if (module.hot) {
-//   module.hot.accept('./App', () => {
-//     const NextApp = require('./App').default
-//     ReactDOM.render(
-//       <AppContainer>
-//         <NextApp />
-//       </AppContainer>,
-//       rootElement
-//     )
-//   })
-// }

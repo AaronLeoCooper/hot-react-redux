@@ -2,27 +2,22 @@
  * Gulpfile for automating build tasks for development & production
  */
 
-const env = process.env.NODE_ENV || 'production'
+const env = process.env.NODE_ENV || 'development'
+const usingHMR = process.env.HMR === 'true' || false
 const isProduction = env === 'production'
+const webpackConfigSrc = usingHMR ? './webpack/config.hmr' : './webpack/config.build'
 
 const path = require('path')
 const del = require('del')
 const gulp = require('gulp')
 const gutil = require('gulp-util')
 const plumber = require('gulp-plumber')
-const stylus = require('gulp-stylus')
 const size = require('gulp-size')
-const autoprefixer = require('gulp-autoprefixer')
-const pug = require('gulp-pug')
 const runSequence = require('run-sequence')
 
 const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
-const webpackConfig = require('./webpack/config.hmr')
-
-const autoprefixerBrowsers = [ 'ie >= 9', 'ie_mob >= 10', 'ff >= 30', 'chrome >= 34', 'safari >= 6', 'opera >= 23', 'ios >= 6', 'android >= 4.4', 'bb >= 10' ]
-
-
+const webpackConfig = require(webpackConfigSrc)
 
 const root = __dirname
 const srcDir = path.join(root, 'src')
@@ -30,93 +25,90 @@ const outputDir = isProduction ? path.join(root, 'dist/production') : path.join(
 
 const srcPath = {
   scripts: path.join(srcDir, 'scripts'),
-  styles: path.join(srcDir, 'styles'),
   images: path.join(srcDir, 'images'),
-  pug: srcDir
+  html: srcDir
 }
 
 const distPath = {
   scripts: path.join(outputDir, 'assets', 'scripts'),
-  styles: path.join(outputDir, 'assets', 'styles'),
   images: path.join(outputDir, 'assets', 'images'),
-  pug: outputDir
+  html: outputDir
 }
 
-
-
-gulp.task('styl', function (cb) {
-  var localsStylus = {} // local variables visible inside stylus sheets
-
-  return gulp.src(path.join(srcPath.styles, 'app.styl'))
-    .pipe(!isProduction ? plumber() : gutil.noop())
-    .pipe(stylus({
-      compress: isProduction,
-      'include css': true,
-      linenos: true,
-      define: localsStylus
-    }))
-    .pipe(autoprefixer({ browsers: autoprefixerBrowsers }))
-    .pipe(gulp.dest(path.join(distPath.styles)))
-    .pipe(size({ title: 'styles' }))
-})
-
-gulp.task('pug', function (cb) {
-  var locals = {} // local variables visible inside pug files
-
-  return gulp.src(path.join(srcPath.pug, '*.pug'))
-    .pipe(!isProduction ? plumber() : gutil.noop())
-    .pipe(pug({
-      pretty: true,
-      locals: locals
-    }))
-    .pipe(gulp.dest(distPath.pug))
-    .pipe(size({ title: 'pug' }))
-})
+gutil.log(` --- Gulp running for: ${env} --- `)
+gutil.log(` --- Webpack config loaded: ${webpackConfigSrc} --- `)
 
 gulp.task('images', function (cb) {
-  return gulp.src(path.join(srcPath.images, 'images/**/*'))
+  return gulp.src(path.join(srcPath.images, '**/*'))
     .pipe(!isProduction ? plumber() : gutil.noop())
-    .pipe(gulp.dest(path.join(distPath.images)))
+    .pipe(gulp.dest(distPath.images))
     .pipe(size({ title: 'images' }))
 })
 
+gulp.task('html', function (cb) {
+  return gulp.src(path.join(srcPath.html, '*.html'))
+    .pipe(!isProduction ? plumber() : gutil.noop())
+    .pipe(gulp.dest(distPath.html))
+    .pipe(size({ title: 'html' }))
+})
+
 gulp.task('webpack-dev-server', function (cb) {
-  new WebpackDevServer(webpack(webpackConfig)).listen(3000, 'localhost', function (err) {
+  new WebpackDevServer(webpack(webpackConfig), {
+    historyApiFallback: true,
+    hot: true,
+    publicPath: '/static/'
+    // publicPath: webpackConfig.output.publicPath
+  }).listen(3000, 'localhost', function (err) {
     if (err) {
       throw new gutil.PluginError('webpack-dev-server', err)
     }
-    gutil.log('[webpack-dev-server]', 'http://localhost:3000/webpack-dev-server/src')
+    gutil.log('[webpack-dev-server]', 'http://localhost:3000/webpack-dev-server/dist/development')
   })
 })
 
-gulp.task('webpack-build', function (cb) {
+const webpackBuild = (cb) => {
+  return (err, stats) => {
+    if (err) {
+      gutil.log('Webpack Build Error', err)
+      if (cb) cb()
+    } else {
+      Object.keys(stats.compilation.assets).forEach(function (key) {
+        gutil.log('Webpack: output ', gutil.colors.green(key))
+      })
+      gutil.log('Webpack: ', gutil.colors.blue('finished'))
+      if (cb) cb()
+    }
+  }
+}
 
+gulp.task('webpack-build', function (cb) {
+  webpack(webpackConfig).run(webpackBuild(cb))
 })
 
 gulp.task('clean', function (cb) {
-  return del(path.join(distPath), { force: true }, cb)
+  return del(path.join(outputDir, '/*'), { force: true }, cb)
 })
 
 gulp.task('watch', function () {
-  gulp.watch(path.join(srcPath.styles, '*.styl'), ['styl'])
   gulp.watch(path.join(srcPath.images, '**/*'), ['images'])
   gulp.watch(path.join(srcPath.scripts, '**/*'), ['webpack-dev-server'])
-  gulp.watch(path.join(root, '*.pug'), ['pug'])
+  gulp.watch(path.join(srcPath.html, '*.html'), ['html'])
 })
 
-
-
 // default development - watch & HMR
-gulp.task('default', /*['clean'],*/ function (cb) {
-  runSequence(['pug', 'styl', 'images'], ['webpack-dev-server', 'watch'], cb)
+gulp.task('default', ['clean'], function (cb) {
+  gutil.log('gulp - running task: [ default ]')
+  runSequence(['html', 'images'], ['webpack-dev-server', 'watch'], cb)
 })
 
 // build:dev
-gulp.task('build:prod', /*['clean'],*/ function (cb) {
-  runSequence('webpack-build', ['pug', 'styl', 'images'], cb)
+gulp.task('build:dev', ['clean'], function (cb) {
+  gutil.log('gulp - running task: [ build:dev ]')
+  runSequence(['html', 'images'], 'webpack-build', cb)
 })
 
 // build:prod
-gulp.task('build:prod', /*['clean'],*/ function (cb) {
-  runSequence('webpack-build', ['pug', 'styl', 'images'], cb)
+gulp.task('build:prod', ['clean'], function (cb) {
+  gutil.log('gulp - running task: [ build:prod ]')
+  runSequence(['html', 'images'], 'webpack-build', cb)
 })
