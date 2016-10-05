@@ -10,9 +10,11 @@ const webpack = require('webpack')
 const WebpackDevServer = require('webpack-dev-server')
 const config = require('./webpack/config.hmr')
 
-new WebpackDevServer(webpack(config), {
-  publicPath: config.output.publicPath
-}).listen(3000, 'localhost', function (err, result) {
+// {
+//   publicPath: config.output.publicPath
+// }
+
+new WebpackDevServer(webpack(config)).listen(3000, 'localhost', function (err, result) {
   if (err) {
     return console.error(err)
   }

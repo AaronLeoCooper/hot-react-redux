@@ -1,6 +1,8 @@
 /**
  * HMR (Hot Module Replacement)
  *
+ * ======== This config extends _base.config.js ========
+ *
  * IMPORTANT: No files are outputted using HMR!!
  * This build is optimised to fully utilize Webpack's
  * HMR using webpack-dev-server. All file changes are
@@ -12,7 +14,7 @@ const webpack = require('webpack')
 
 const root = path.join(__dirname, '../')
 const srcDir = 'src'
-const outputDir = 'dist/development'
+const outputDir = 'dist/development/assets/scripts'
 
 const webpackEnv = new webpack.DefinePlugin({
   'process.env': {
@@ -20,25 +22,31 @@ const webpackEnv = new webpack.DefinePlugin({
   }
 })
 
-module.exports = {
+
+
+/**
+ * Export hmr (npm start) config
+ *
+ * This config extends _base.config.js
+ */
+
+const _baseConfig = require('./_base.config')
+
+module.exports = Object.assign({}, _baseConfig, {
+  debug: true,
   devtool: 'eval',
 
-  context: root,
   entry: [
     'react-hot-loader/patch',
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',
-    `${srcDir}/scripts/index.js`
+    `./${srcDir}/scripts/index.js`
   ],
 
   output: {
     path: path.join(root, outputDir),
     filename: 'app.js',
-    publicPath: '/assets/'
-  },
-
-  resolve: {
-    extensions: ['', '.js', '.jsx', '.styl']
+    publicPath: '/assets/scripts/'
   },
 
   plugins: [
@@ -52,30 +60,5 @@ module.exports = {
     inline: true,
     port: 3000,
     hot: true
-  },
-
-  module: {
-    loaders: [
-      {
-        test: /\.jsx?$/,
-        loader: 'babel',
-        exclude: /node_modules/,
-        query: {
-          'presets': ['react', 'es2015'],
-          'plugins': ['react-hot-loader/babel']
-        },
-        include: [
-          path.join(root, srcDir, 'scripts'),
-          path.join(root, srcDir, 'styles'),
-          path.join(root, srcDir, 'images')
-        ]
-      },
-      { test: /\.styl$/, loader: 'style-loader!css-loader!stylus-loader' },
-      { test: /\.{jpg|png|gif}$/, loader: 'file-loader' }
-    ]
-  },
-
-  stylus: {
-    preferPathResolver: 'webpack'
   }
-}
+})

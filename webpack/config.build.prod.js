@@ -1,6 +1,8 @@
 /**
  * Build : Production
  *
+ * ======== This config extends _base.config.js ========
+ *
  * Outputs a build of the app to /build/production
  * Includes optimisations for production-ready app build
  */
@@ -8,8 +10,9 @@
 const path = require('path')
 const webpack = require('webpack')
 
+const root = path.join(__dirname, '../')
 const srcDir = './src'
-const outputDir = './dist/production'
+const outputDir = './dist/production/assets'
 
 const webpackDeDupe = new webpack.optimize.DedupePlugin()
 const webpackEnv = new webpack.DefinePlugin({
@@ -23,45 +26,20 @@ const webpackMinify = new webpack.optimize.UglifyJsPlugin({
   }
 })
 
-module.exports = {
-  devtool: 'cheap-module-source-map',
+/**
+ * Export build:prod config
+ *
+ * This config extends _base.config.js
+ */
 
-  context: root,
-  entry: `./${srcDir}/scripts/index.js`,
+const _baseConfig = require('./_base.config')
 
+module.exports = Object.assign({}, _baseConfig, {
   output: {
-    path: outputDir,
+    path: path.join(root, outputDir),
     filename: 'app.js',
     publicPath: '/assets/'
   },
 
-  plugins: [ webpackEnv, webpackDeDupe, webpackMinify ],
-
-  resolve: {
-    extensions: ['', '.js', '.jsx', '.styl']
-  },
-
-  module: {
-    loaders: [
-      {
-        test: /\.jsx?$/,
-        loader: 'babel',
-        exclude: /node_modules/,
-        query: {
-          'presets': ['react', 'es2015']
-        },
-        include: [
-          path.join(root, srcDir, 'scripts'),
-          path.join(root, srcDir, 'styles'),
-          path.join(root, srcDir, 'images')
-        ]
-      },
-      { test: /\.styl$/, loader: 'style-loader!css-loader!stylus-loader' },
-      { test: /\.{jpg|png|gif}$/, loader: 'file-loader' }
-    ]
-  },
-
-  stylus: {
-    preferPathResolver: 'webpack'
-  }
-}
+  plugins: [ webpackEnv, webpackDeDupe, webpackMinify ]
+})
