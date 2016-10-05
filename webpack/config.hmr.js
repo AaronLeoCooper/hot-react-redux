@@ -41,11 +41,9 @@ module.exports = {
 
   resolve: {
     alias: {
-      scripts: path.resolve(root, srcDir, 'scripts'),
-      styles: path.resolve(root, srcDir, 'styles'),
-      images: path.resolve(root, srcDir, 'images')
+      scripts: path.resolve(root, srcDir, 'scripts')
     },
-    extensions: ['', '.js', '.jsx', '.css', '.scss', '.sass', '.jpg', '.png', '.gif']
+    extensions: ['', '.js', '.jsx']
   },
 
   module: {
@@ -55,28 +53,8 @@ module.exports = {
         loaders: ['babel'],
         exclude: /node_modules/,
         include: [
-          path.join(root, srcDir, 'scripts'),
-          path.join(root, srcDir, 'styles'),
-          path.join(root, srcDir, 'images')
+          path.join(root, srcDir, 'scripts')
         ]
-      },
-      {
-        test: /\.scss$/,
-        loaders: [ 'style-loader', 'css-loader?sourceMap', 'postcss-loader?sourceMap', 'sass-loader?sourceMap' ],
-        include: [
-          path.join(root, srcDir, 'styles'),
-          path.join(root, srcDir, 'images')
-        ]
-      },
-      {
-        test: /\.(jpg|png|gif)$/,
-        loader: 'url?limit=25000',
-        include: path.join(root, srcDir, 'images')
-      },
-      {
-        test: /\.(jpg|png|gif)$/,
-        loader: 'file?name=[path][name].[hash].[ext]',
-        include: path.join(root, srcDir, 'images')
       }
     ]
   },

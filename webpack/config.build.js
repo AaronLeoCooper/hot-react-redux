@@ -10,8 +10,6 @@ const isProduction = env === 'production' || false
 
 const path = require('path')
 const webpack = require('webpack')
-const autoprefixer = require('autoprefixer')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const root = path.join(__dirname, '../')
 const srcDir = 'src'
@@ -31,8 +29,8 @@ const webpackMinify = new webpack.optimize.UglifyJsPlugin({
 })
 
 const plugins = isProduction
-  ? [ webpackEnv, new ExtractTextPlugin('styles.css'), webpackDeDupe, webpackOccuranceOrder, webpackMinify ]
-  : [ webpackEnv, new ExtractTextPlugin('styles.css') ]
+  ? [ webpackEnv, webpackDeDupe, webpackOccuranceOrder, webpackMinify ]
+  : [ webpackEnv ]
 
 const devtool = isProduction ? 'cheap-module-source-map' : 'eval'
 
@@ -52,11 +50,9 @@ module.exports = {
 
   resolve: {
     alias: {
-      scripts: path.resolve(root, srcDir, 'scripts'),
-      styles: path.resolve(root, srcDir, 'styles'),
-      images: path.resolve(root, srcDir, 'images')
+      scripts: path.resolve(root, srcDir, 'scripts')
     },
-    extensions: ['', '.js', '.jsx', '.styl']
+    extensions: ['', '.js', '.jsx']
   },
 
   output: {
@@ -72,34 +68,10 @@ module.exports = {
         loaders: ['babel'],
         exclude: /node_modules/,
         include: [
-          path.join(root, srcDir, 'scripts'),
-          path.join(root, srcDir, 'styles'),
-          path.join(root, srcDir, 'images')
+          path.join(root, srcDir, 'scripts')
         ]
-      },
-      {
-        test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap!postcss-loader?sourceMap!sass-loader?sourceMap'),
-        include: [
-          path.join(root, srcDir, 'styles'),
-          path.join(root, srcDir, 'images')
-        ]
-      },
-      {
-        test: /\.(jpg|png|gif)$/,
-        loader: 'url?limit=25000',
-        include: path.join(root, srcDir, 'images')
-      },
-      {
-        test: /\.(jpg|png|gif)$/,
-        loader: 'file?name=[path][name].[hash].[ext]',
-        include: path.join(root, srcDir, 'images')
       }
     ]
-  },
-
-  postcss: function () {
-    return [ autoprefixer ]
   },
 
   plugins: plugins
