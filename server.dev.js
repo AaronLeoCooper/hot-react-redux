@@ -21,5 +21,5 @@ new WebpackDevServer(webpack(config), {
     return console.error(err)
   }
 
-  console.log('Listening at localhost:3000, go to: http://localhost:3000/webpack-dev-server for HMR development')
+  console.log('Listening at localhost:3000, go to: http://localhost:3000/webpack-dev-server/dist/development/index.html')
 })

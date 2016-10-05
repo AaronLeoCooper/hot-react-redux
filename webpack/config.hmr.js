@@ -36,7 +36,7 @@ module.exports = {
   output: {
     path: path.join(root, outputDir),
     filename: 'app.js',
-    publicPath: '/assets/scripts/'
+    publicPath: '/dist/development/assets/scripts/'
   },
 
   resolve: {
